@@ -5,7 +5,12 @@ import Image from "next/image";
 import PRLogo from "@/01-Images/PRLogo.png";
 import HiddenMenu from "@/01-Images/HiddenMenu.png";
 
-export function Navbar() {
+type NavbarProps = {
+  setDailyHoroscope: React.Dispatch<React.SetStateAction<string | null>>;
+  setDailyError: React.Dispatch<React.SetStateAction<string | null>>;
+};
+
+export function Navbar({ setDailyHoroscope, setDailyError }: NavbarProps) {
   const signs = [
     "Aries",
     "Taurus",
@@ -20,9 +25,9 @@ export function Navbar() {
     "Aquarius",
     "Pisces",
   ];
-  const [dailyHoroscope, setDailyHoroscope] = useState<string | null>(null);
-  const [dailyError, setDailyError] = useState<string | null>(null);
+
   const [show, setShow] = useState<boolean>(false);
+
   function dropMenu() {
     setShow(!show);
   }
@@ -35,14 +40,14 @@ export function Navbar() {
       }
       const result = await response.json();
       setDailyHoroscope(result.data.horoscope);
-    } catch (error) {
-      setDailyError(`Error is ${error}`);
+    } catch {
+      setDailyError(`Request failed! Our team is working on it.`);
       setDailyHoroscope(null);
     }
+    setShow(!show);
   }
   return (
-    <div className="flex flex-row justify-between items-center align-center p-1.5 border-b  border-b-cyan-800">
-      {/* <div className="bg-black flex flex-row justify-between "> */}
+    <div className="flex flex-row justify-between items-center align-center p-1.5 border-b bg-black border-b-cyan-800">
       <span>
         <Image src={PRLogo} alt="PathReflectionLogo" className="w-60" />
       </span>
@@ -63,6 +68,7 @@ export function Navbar() {
           className="border p-3 font-bold font-serif bg-blue-900 absolute right-0 top-18 z-50 "
           onChange={(e) => fetchData(e.target.value.toLocaleLowerCase())}
         >
+          <option>Daily Zodiac</option>
           {signs.map((item, idx) => (
             <option key={idx} className="absolute left-10">
               {item}
@@ -70,9 +76,6 @@ export function Navbar() {
           ))}
         </select>
       ) : null}
-
-      {dailyHoroscope}
-      {dailyError}
     </div>
   );
 }
