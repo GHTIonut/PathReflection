@@ -26,10 +26,16 @@ export function Navbar({ setDailyHoroscope, setDailyError }: NavbarProps) {
     "Pisces",
   ];
 
-  const [show, setShow] = useState<boolean>(false);
+  const [showMenu, setShow] = useState<boolean>(false);
+  const [showZodiacMenu, setShowZodiacMenu] = useState<boolean>(false);
 
   function dropMenu() {
-    setShow(!show);
+    setShow(!showMenu);
+    setShowZodiacMenu(false);
+  }
+
+  function dropZodiacMenu() {
+    setShowZodiacMenu(!showZodiacMenu);
   }
 
   async function fetchData(sign: string) {
@@ -44,10 +50,10 @@ export function Navbar({ setDailyHoroscope, setDailyError }: NavbarProps) {
       setDailyError(`Request failed! Our team is working on it.`);
       setDailyHoroscope(null);
     }
-    setShow(!show);
+    setShow(!showMenu);
   }
   return (
-    <div className="flex flex-row justify-between items-center align-center p-1.5 border-b bg-black border-b-cyan-800">
+    <div className="relative flex items-center justify-between border-b border-cyan-900 bg-gradient-to-r from-slate-950 via-black to-slate-950 px-4 py-3 shadow-lg">
       <span>
         <Image src={PRLogo} alt="PathReflectionLogo" className="w-60" />
       </span>
@@ -55,27 +61,36 @@ export function Navbar({ setDailyHoroscope, setDailyError }: NavbarProps) {
         <Image
           src={HiddenMenu}
           alt="Hamburger Button"
-          className="w-11 cursor-pointer"
+          className="w-11 cursor-pointer rounded-lg p-1 transition-all duration-300 hover:bg-cyan-900/30 hover:scale-110"
           onClick={() => dropMenu()}
         />
       </span>
 
-      {show ? (
-        <select
-          aria-label="signs"
-          name="signs"
-          id="signs"
-          className="border p-3 font-bold font-serif bg-blue-900 absolute right-0 top-18 z-50 "
-          onChange={(e) => fetchData(e.target.value.toLocaleLowerCase())}
-        >
-          <option>Daily Zodiac</option>
-          {signs.map((item, idx) => (
-            <option key={idx} className="absolute left-10">
-              {item}
-            </option>
-          ))}
-        </select>
-      ) : null}
+      {showMenu && (
+        <ul className="absolute right-3 top-18 z-50 min-w-56 rounded-xl border border-cyan-900 bg-slate-950/95 backdrop-blur-md shadow-2x loverflow-hidden">
+          <li className="bg-gray-950">
+            <button
+              className="flex w-full items-center justify-between px-4 py-3 text-left text-cyan-300 transition-colors hover:bg-cyan-950"
+              onClick={() => dropZodiacMenu()}
+            >
+              Daily Zodiac
+            </button>
+            {showZodiacMenu && (
+              <ul>
+                {signs.map((item, index) => (
+                  <li
+                    className="cursor-pointer px-4 py-2 text-slate-200 transition-all duration-200 hover:bg-cyan-900 hover:text-white"
+                    key={index}
+                    onClick={() => fetchData(item)}
+                  >
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </li>
+        </ul>
+      )}
     </div>
   );
 }
